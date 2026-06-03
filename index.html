@@ -3,17 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Fluid Tracker</title>
+
+<title>Protein Tracker</title>
 
 <link rel="manifest" href="manifest.json">
 
 <style>
     body {
         font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-        background: #f5f5f5;
+        background: linear-gradient(to bottom, #f3f7fa, #dfeaf5);
         margin: 0;
         padding: 20px;
-        color: #222;
+        color: #1f2937;
     }
 
     .container {
@@ -21,21 +22,28 @@
         margin: auto;
     }
 
-    .card {
-        background: white;
-        border-radius: 20px;
-        padding: 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    .logo {
+        text-align: center;
+        font-size: 60px;
+        margin-bottom: 10px;
     }
 
     h1 {
         text-align: center;
-        margin-bottom: 10px;
+        margin-top: 0;
+        margin-bottom: 20px;
+    }
+
+    .card {
+        background: white;
+        border-radius: 24px;
+        padding: 22px;
+        margin-bottom: 20px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
     }
 
     .big-number {
-        font-size: 56px;
+        font-size: 58px;
         font-weight: bold;
         text-align: center;
     }
@@ -43,22 +51,22 @@
     .subtitle {
         text-align: center;
         font-size: 18px;
-        margin-top: 5px;
-        color: #666;
+        margin-top: 8px;
+        color: #6b7280;
     }
 
     .status {
         text-align: center;
-        font-size: 22px;
-        margin-top: 15px;
-        font-weight: 600;
+        font-size: 24px;
+        margin-top: 18px;
+        font-weight: 700;
     }
 
     .progress-bar {
         width: 100%;
-        height: 30px;
-        background: #ddd;
-        border-radius: 15px;
+        height: 32px;
+        background: #d1d5db;
+        border-radius: 20px;
         overflow: hidden;
         margin-top: 20px;
     }
@@ -66,25 +74,26 @@
     .progress-fill {
         height: 100%;
         width: 0%;
-        background: #4da6ff;
+        background: linear-gradient(to right, #34d399, #10b981);
         transition: width 0.3s ease;
     }
 
     .button-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        margin-top: 20px;
+        gap: 14px;
+        margin-top: 10px;
     }
 
     button {
         font-size: 20px;
-        padding: 16px;
+        padding: 18px;
         border: none;
-        border-radius: 14px;
-        background: #4da6ff;
+        border-radius: 16px;
+        background: #10b981;
         color: white;
         cursor: pointer;
+        font-weight: 600;
     }
 
     button:active {
@@ -93,16 +102,24 @@
 
     input {
         width: 100%;
-        padding: 12px;
+        padding: 14px;
         font-size: 18px;
-        border-radius: 10px;
-        border: 1px solid #ccc;
+        border-radius: 12px;
+        border: 1px solid #cbd5e1;
         margin-top: 10px;
+        box-sizing: border-box;
     }
 
     .settings-label {
-        margin-top: 15px;
-        font-weight: 600;
+        margin-top: 18px;
+        font-weight: 700;
+    }
+
+    .footer-note {
+        text-align: center;
+        color: #6b7280;
+        font-size: 14px;
+        margin-top: 10px;
     }
 </style>
 </head>
@@ -111,90 +128,136 @@
 
 <div class="container">
 
-    <h1>Fluid Tracker</h1>
+    <div class="logo">🥤</div>
+
+    <h1>Protein Tracker</h1>
 
     <div class="card">
-        <div class="big-number" id="currentOz">0 oz</div>
-        <div class="subtitle" id="targetText">Target: 0 oz</div>
 
-        <div class="status" id="statusText">Starting Day</div>
+        <div class="big-number" id="currentProtein">0 oz</div>
+
+        <div class="subtitle" id="targetText">
+            Goal Pace: 0 oz
+        </div>
+
+        <div class="status" id="statusText">
+            Starting Day
+        </div>
 
         <div class="progress-bar">
             <div class="progress-fill" id="progressFill"></div>
         </div>
+
     </div>
 
     <div class="card">
+
         <div class="button-grid">
-            <button onclick="addFluid(1)">+1 oz</button>
-            <button onclick="addFluid(2)">+2 oz</button>
-            <button onclick="addFluid(4)">+4 oz</button>
-            <button onclick="customFluid()">Custom</button>
+            <button onclick="addProtein(1)">+1 oz</button>
+            <button onclick="addProtein(2)">+2 oz</button>
+            <button onclick="addProtein(4)">+4 oz</button>
+            <button onclick="customProtein()">Custom</button>
         </div>
+
     </div>
 
     <div class="card">
-        <div class="settings-label">Wake / Start Time</div>
+
+        <div class="settings-label">Start Time</div>
         <input type="time" id="startTime" value="07:30">
 
-        <div class="settings-label">Daily Goal (oz)</div>
-        <input type="number" id="goalOz" value="64">
+        <div class="settings-label">Daily Protein Goal (oz)</div>
+        <input type="number" id="goalOz" value="32">
 
         <div class="settings-label">Hours To Finish Goal</div>
-        <input type="number" id="hoursWindow" value="16">
+        <input type="number" id="hoursWindow" value="12">
 
-        <button style="margin-top:20px; width:100%;" onclick="saveSettings()">
+        <button style="margin-top:22px; width:100%;" onclick="saveSettings()">
             Save Settings
         </button>
+
+    </div>
+
+    <div class="footer-note">
+        Track your daily protein intake pace
     </div>
 
 </div>
 
 <script>
-let currentOz = parseFloat(localStorage.getItem("currentOz")) || 0;
 
-let settings = JSON.parse(localStorage.getItem("fluidSettings")) || {
-    startTime: "07:30",
-    goalOz: 64,
-    hoursWindow: 16
-};
+let currentProtein =
+    parseFloat(localStorage.getItem("currentProtein")) || 0;
 
-document.getElementById("startTime").value = settings.startTime;
-document.getElementById("goalOz").value = settings.goalOz;
-document.getElementById("hoursWindow").value = settings.hoursWindow;
-
-function saveSettings() {
-    settings = {
-        startTime: document.getElementById("startTime").value,
-        goalOz: parseFloat(document.getElementById("goalOz").value),
-        hoursWindow: parseFloat(document.getElementById("hoursWindow").value)
+let settings =
+    JSON.parse(localStorage.getItem("proteinSettings")) || {
+        startTime: "07:30",
+        goalOz: 32,
+        hoursWindow: 12
     };
 
-    localStorage.setItem("fluidSettings", JSON.stringify(settings));
+document.getElementById("startTime").value =
+    settings.startTime;
+
+document.getElementById("goalOz").value =
+    settings.goalOz;
+
+document.getElementById("hoursWindow").value =
+    settings.hoursWindow;
+
+function saveSettings() {
+
+    settings = {
+        startTime:
+            document.getElementById("startTime").value,
+
+        goalOz:
+            parseFloat(document.getElementById("goalOz").value),
+
+        hoursWindow:
+            parseFloat(document.getElementById("hoursWindow").value)
+    };
+
+    localStorage.setItem(
+        "proteinSettings",
+        JSON.stringify(settings)
+    );
+
     updateDisplay();
 }
 
-function addFluid(amount) {
-    currentOz += amount;
-    localStorage.setItem("currentOz", currentOz);
+function addProtein(amount) {
+
+    currentProtein += amount;
+
+    localStorage.setItem(
+        "currentProtein",
+        currentProtein
+    );
+
     updateDisplay();
 }
 
-function customFluid() {
-    let amount = prompt("Enter ounces:");
+function customProtein() {
+
+    let amount = prompt("Enter protein ounces:");
+
     amount = parseFloat(amount);
 
     if (!isNaN(amount)) {
-        addFluid(amount);
+        addProtein(amount);
     }
 }
 
-function getExpectedOz() {
+function getExpectedProtein() {
+
     const now = new Date();
 
-    const [hours, minutes] = settings.startTime.split(":").map(Number);
+    const [hours, minutes] =
+        settings.startTime.split(":").map(Number);
 
     const start = new Date();
+
     start.setHours(hours);
     start.setMinutes(minutes);
     start.setSeconds(0);
@@ -203,11 +266,14 @@ function getExpectedOz() {
 
     if (elapsedMs <= 0) return 0;
 
-    const elapsedHours = elapsedMs / (1000 * 60 * 60);
+    const elapsedHours =
+        elapsedMs / (1000 * 60 * 60);
 
-    const rate = settings.goalOz / settings.hoursWindow;
+    const rate =
+        settings.goalOz / settings.hoursWindow;
 
-    let expected = elapsedHours * rate;
+    let expected =
+        elapsedHours * rate;
 
     if (expected > settings.goalOz) {
         expected = settings.goalOz;
@@ -217,71 +283,106 @@ function getExpectedOz() {
 }
 
 function updateDisplay() {
-    const expected = getExpectedOz();
 
-    document.getElementById("currentOz").innerText =
-        `${currentOz.toFixed(1)} oz`;
+    const expected = getExpectedProtein();
+
+    document.getElementById("currentProtein").innerText =
+        `${currentProtein.toFixed(1)} oz`;
 
     document.getElementById("targetText").innerText =
-        `Target: ${expected.toFixed(1)} oz`;
+        `Goal Pace: ${expected.toFixed(1)} oz`;
 
-    const difference = currentOz - expected;
+    const difference =
+        currentProtein - expected;
 
     let status = "";
 
-    if (difference >= 3) {
-        status = `${difference.toFixed(1)} oz Ahead`;
-    } else if (difference <= -3) {
-        status = `${Math.abs(difference).toFixed(1)} oz Behind`;
+    if (difference >= 2) {
+
+        status =
+            `${difference.toFixed(1)} oz Ahead`;
+
+    } else if (difference <= -2) {
+
+        status =
+            `${Math.abs(difference).toFixed(1)} oz Behind`;
+
     } else {
+
         status = "On Track";
     }
 
-    document.getElementById("statusText").innerText = status;
+    document.getElementById("statusText").innerText =
+        status;
 
     const progressPercent =
-        (currentOz / settings.goalOz) * 100;
+        (currentProtein / settings.goalOz) * 100;
 
     document.getElementById("progressFill").style.width =
         `${Math.min(progressPercent, 100)}%`;
 }
 
 async function requestNotifications() {
+
     if ("Notification" in window) {
         await Notification.requestPermission();
     }
 }
 
 function checkReminder() {
-    const expected = getExpectedOz();
-    const difference = expected - currentOz;
 
-    if (difference > 3) {
+    const expected =
+        getExpectedProtein();
+
+    const difference =
+        expected - currentProtein;
+
+    if (difference > 2) {
+
         if (Notification.permission === "granted") {
-            new Notification("Fluid Reminder", {
-                body: `You are ${difference.toFixed(1)} oz behind your goal.`
+
+            new Notification("Protein Reminder", {
+                body:
+                    `You are ${difference.toFixed(1)} oz behind your protein goal.`
             });
         }
     }
 }
 
 function resetDailyAtMidnight() {
-    const lastDate = localStorage.getItem("lastDate");
-    const today = new Date().toDateString();
+
+    const lastDate =
+        localStorage.getItem("proteinLastDate");
+
+    const today =
+        new Date().toDateString();
 
     if (lastDate !== today) {
-        currentOz = 0;
-        localStorage.setItem("currentOz", currentOz);
-        localStorage.setItem("lastDate", today);
+
+        currentProtein = 0;
+
+        localStorage.setItem(
+            "currentProtein",
+            currentProtein
+        );
+
+        localStorage.setItem(
+            "proteinLastDate",
+            today
+        );
     }
 }
 
 resetDailyAtMidnight();
+
 updateDisplay();
+
 requestNotifications();
 
 setInterval(updateDisplay, 60000);
+
 setInterval(checkReminder, 1800000);
+
 </script>
 
 </body>
