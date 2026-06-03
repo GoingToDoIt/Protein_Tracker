@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Fluid Tracker</title>
+
+<link rel="manifest" href="manifest.json">
+
+<style>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        background: #f5f5f5;
+        margin: 0;
+        padding: 20px;
+        color: #222;
+    }
+
+    .container {
+        max-width: 420px;
+        margin: auto;
+    }
+
+    .card {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .big-number {
+        font-size: 56px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .subtitle {
+        text-align: center;
+        font-size: 18px;
+        margin-top: 5px;
+        color: #666;
+    }
+
+    .status {
+        text-align: center;
+        font-size: 22px;
+        margin-top: 15px;
+        font-weight: 600;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 30px;
+        background: #ddd;
+        border-radius: 15px;
+        overflow: hidden;
+        margin-top: 20px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: #4da6ff;
+        transition: width 0.3s ease;
+    }
+
+    .button-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    button {
+        font-size: 20px;
+        padding: 16px;
+        border: none;
+        border-radius: 14px;
+        background: #4da6ff;
+        color: white;
+        cursor: pointer;
+    }
+
+    button:active {
+        transform: scale(0.98);
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        font-size: 18px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        margin-top: 10px;
+    }
+
+    .settings-label {
+        margin-top: 15px;
+        font-weight: 600;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Fluid Tracker</h1>
+
+    <div class="card">
+        <div class="big-number" id="currentOz">0 oz</div>
+        <div class="subtitle" id="targetText">Target: 0 oz</div>
+
+        <div class="status" id="statusText">Starting Day</div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="button-grid">
+            <button onclick="addFluid(1)">+1 oz</button>
+            <button onclick="addFluid(2)">+2 oz</button>
+            <button onclick="addFluid(4)">+4 oz</button>
+            <button onclick="customFluid()">Custom</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="settings-label">Wake / Start Time</div>
+        <input type="time" id="startTime" value="07:30">
+
+        <div class="settings-label">Daily Goal (oz)</div>
+        <input type="number" id="goalOz" value="64">
+
+        <div class="settings-label">Hours To Finish Goal</div>
+        <input type="number" id="hoursWindow" value="16">
+
+        <button style="margin-top:20px; width:100%;" onclick="saveSettings()">
+            Save Settings
+        </button>
+    </div>
+
+</div>
+
+<script>
+let currentOz = parseFloat(localStorage.getItem("currentOz")) || 0;
+
+let settings = JSON.parse(localStorage.getItem("fluidSettings")) || {
+    startTime: "07:30",
+    goalOz: 64,
+    hoursWindow: 16
+};
+
+document.getElementById("startTime").value = settings.startTime;
+document.getElementById("goalOz").value = settings.goalOz;
+document.getElementById("hoursWindow").value = settings.hoursWindow;
+
+function saveSettings() {
+    settings = {
+        startTime: document.getElementById("startTime").value,
+        goalOz: parseFloat(document.getElementById("goalOz").value),
+        hoursWindow: parseFloat(document.getElementById("hoursWindow").value)
+    };
+
+    localStorage.setItem("fluidSettings", JSON.stringify(settings));
+    updateDisplay();
+}
+
+function addFluid(amount) {
+    currentOz += amount;
+    localStorage.setItem("currentOz", currentOz);
+    updateDisplay();
+}
+
+function customFluid() {
+    let amount = prompt("Enter ounces:");
+    amount = parseFloat(amount);
+
+    if (!isNaN(amount)) {
+        addFluid(amount);
+    }
+}
+
+function getExpectedOz() {
+    const now = new Date();
+
+    const [hours, minutes] = settings.startTime.split(":").map(Number);
+
+    const start = new Date();
+    start.setHours(hours);
+    start.setMinutes(minutes);
+    start.setSeconds(0);
+
+    const elapsedMs = now - start;
+
+    if (elapsedMs <= 0) return 0;
+
+    const elapsedHours = elapsedMs / (1000 * 60 * 60);
+
+    const rate = settings.goalOz / settings.hoursWindow;
+
+    let expected = elapsedHours * rate;
+
+    if (expected > settings.goalOz) {
+        expected = settings.goalOz;
+    }
+
+    return expected;
+}
+
+function updateDisplay() {
+    const expected = getExpectedOz();
+
+    document.getElementById("currentOz").innerText =
+        `${currentOz.toFixed(1)} oz`;
+
+    document.getElementById("targetText").innerText =
+        `Target: ${expected.toFixed(1)} oz`;
+
+    const difference = currentOz - expected;
+
+    let status = "";
+
+    if (difference >= 3) {
+        status = `${difference.toFixed(1)} oz Ahead`;
+    } else if (difference <= -3) {
+        status = `${Math.abs(difference).toFixed(1)} oz Behind`;
+    } else {
+        status = "On Track";
+    }
+
+    document.getElementById("statusText").innerText = status;
+
+    const progressPercent =
+        (currentOz / settings.goalOz) * 100;
+
+    document.getElementById("progressFill").style.width =
+        `${Math.min(progressPercent, 100)}%`;
+}
+
+async function requestNotifications() {
+    if ("Notification" in window) {
+        await Notification.requestPermission();
+    }
+}
+
+function checkReminder() {
+    const expected = getExpectedOz();
+    const difference = expected - currentOz;
+
+    if (difference > 3) {
+        if (Notification.permission === "granted") {
+            new Notification("Fluid Reminder", {
+                body: `You are ${difference.toFixed(1)} oz behind your goal.`
+            });
+        }
+    }
+}
+
+function resetDailyAtMidnight() {
+    const lastDate = localStorage.getItem("lastDate");
+    const today = new Date().toDateString();
+
+    if (lastDate !== today) {
+        currentOz = 0;
+        localStorage.setItem("currentOz", currentOz);
+        localStorage.setItem("lastDate", today);
+    }
+}
+
+resetDailyAtMidnight();
+updateDisplay();
+requestNotifications();
+
+setInterval(updateDisplay, 60000);
+setInterval(checkReminder, 1800000);
+</script>
+
+</body>
+</html>
